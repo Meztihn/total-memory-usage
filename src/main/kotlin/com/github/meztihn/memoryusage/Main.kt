@@ -1,6 +1,7 @@
 package com.github.meztihn.memoryusage
 
 import com.github.meztihn.memoryusage.Memory.Unit.*
+import com.github.meztihn.memoryusage.OS.Type.*
 
 fun main(args: Array<String>) {
     args.firstOrNull()?.let { processName ->
@@ -9,8 +10,11 @@ fun main(args: Array<String>) {
     } ?: println("Please specify process name.")
 }
 
-private fun processes(): List<Process> = Runtime.getRuntime().exec("tasklist /fo csv /nh").inputStream.use { stream ->
-    stream.bufferedReader().lineSequence().map { line -> parse(line) }.toList()
+private fun processes(): List<Process> = when (OS.type) {
+    WINDOWS -> Runtime.getRuntime().exec("tasklist /fo csv /nh").inputStream.use { stream ->
+        stream.bufferedReader().lineSequence().map { line -> parse(line) }.toList()
+    }
+    else -> throw UnsupportedOSException()
 }
 
 private val nonDigit = Regex("[^\\d]")
