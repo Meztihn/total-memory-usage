@@ -8,8 +8,10 @@ fun main(args: Array<String>) {
         println("Please specify process name.")
     } else {
         val processName = args.first()
-        val memory = processes().filter { it.name.contains(processName, ignoreCase = true) }.map { it.memory }.reduce { total, current -> total + current }
-        println("$processName reserved ${memory.to(GB)} of memory.")
+        processes().filter { it.name.contains(processName, ignoreCase = true) }.groupBy { it.name }.forEach { (name, processes) ->
+            val memory = processes.map { it.memory }.reduce { total, current -> total + current }
+            println("$name reserved ${memory.to(MB)} of memory.")
+        }
     }
 }
 
